@@ -5270,7 +5270,8 @@ module('users.bert.SqueakJS.vm').requires().toRun(function() {
 		      return false;
 		    },
 		    isAssociation: function(obj) {
-		      return typeof obj !== "number" && obj.pointersSize() == 2;
+		      return obj.sqClass && (obj.sqClass.pointers[0] === this.vm.specialObjects[Squeak.splOb_SchedulerAssociation].sqClass.pointers[0].pointers[0]);
+		      // return typeof obj !== "number" && obj.pointersSize() == 2;
 		    },
 		    ensureSmallInt: function(number) {
 		      if (number === (number|0) && this.vm.canBeSmallInt(number))

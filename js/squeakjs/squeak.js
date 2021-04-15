@@ -53,10 +53,12 @@ if (isMagic) {
   thestatus.style.position = 'absolute';
   thestatus.style.top = '7px';
   thestatus.style.left = '4px';
-  thestatus.style.height = '10px';
   thestatus.style.transition = 'opacity 500ms';
   thestatus.style.opacity = 0;
-  thestatus.style.color = 'gray';
+  thestatus.style.color = 'black';
+  thestatus.style.backgroundColor = 'rgb(255, 255, 255, 0.6)';
+  thestatus.style.borderRadius = '5px';
+  thestatus.style.padding = '5px';
   thestatus.innerHTML = "<i>starting virtual machine...</i>";
   magicWindow.thestatus = thestatus;
   if (magicWindow.document.body) magicWindow.document.body.appendChild(thestatus);}

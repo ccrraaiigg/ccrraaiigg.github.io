@@ -1,16 +1,19 @@
 function dragElement(element, handle) {
-  var deltaX = deltaY = x = y = 0
+  var deltaX = deltaY = x = y = 0,
+      oldZIndices = [],
+      dashboard = window.document.getElementById('dashboard')
 
   handle.onmousedown = dragMouseDown
 
   function dragMouseDown(event) {
-    var dashboard = window.document.getElementById('dashboard')
 
     element.style.pointerEvents = "none"
     event = event || window.event
     event.preventDefault()
 
-    Array.from(document.querySelectorAll('body *')).map(element => element.style.zIndex = 0)
+    Array.from(document.querySelectorAll('body *')).map(element => {
+      oldZIndices[element] = element.style.zIndex
+      element.style.zIndex = 0})
     element.style.zIndex = 3000
 
     if (dashboard) {dashboard.style.zIndex = 2000}
@@ -35,6 +38,9 @@ function dragElement(element, handle) {
 
   function closeDragElement() {
     element.style.pointerEvents = "all"
+    Array.from(document.querySelectorAll('body *')).map(element => element.style.zIndex = oldZIndices[element])
+
+    if (dashboard) {dashboard.style.zIndex = 4000}
     document.onmouseup = null
     document.onmousemove = null
     if (element.onmoveend) {element.onmoveend()}}}
@@ -133,7 +139,12 @@ window.onload = function () {
 	  div.style.opacity = 0
 	  div.style.pointerEvents = 'none'}}
 
-      if (window.WebMidi) {WebMidi.enable()}},
+      if (window.WebMidi) {
+	WebMidi.enable(
+	  (err) => {
+	    if (err) {console.warn(err)}
+	    else {console.log("Sysex is enabled.")}},
+	  true)}},
     1500)
 
     window.setTimeout(

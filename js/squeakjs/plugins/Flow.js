@@ -11,17 +11,6 @@ module("SqueakJS.plugins.Flow").requires("users.bert.SqueakJS.vm").toRun(
       interpreterProxy = interpreter
       self.interpreter = interpreter
 
-      if (top.WebMidi) {
-	top.WebMidi.writePacketsTo = (packets, output) => {
-	  var index
-	
-	  for (index = 0; index < packets.length; index = index + 4) {
-	    output.send(
-	      packets[index],
-	      [packets[index + 1],
-	       packets[index + 2]],
-	      packets[index + 3])}}}
-      
       if ((interpreterProxy.majorVersion() == VM_PROXY_MAJOR) === false) return false
       else return (interpreterProxy.minorVersion() >= VM_PROXY_MINOR)}
 
