@@ -1,7 +1,7 @@
 scene.renderingNormally = true
 
 window.mouseenter = function (event) {
-  window.squeakDisplay.vm = SqueakJS.vm
+  window.squeakDisplay.vm = top.SqueakJS.vm
   disableControls('wasd-controls')}
 
 window.mouseleave = function (event) {
@@ -220,7 +220,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
       spikeRendering()})
 
   plane.movemouse = function (x, y) {
-    var canvas = document.getElementById('squeak'),
+    var canvas = document.getElementById('caffeine-canvas'),
 	lastProjectedEvent = canvas.lastProjectedEvent
 
     if (lastProjectedEvent) {
@@ -277,7 +277,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 
       window.mouseleave(event)})}
 
-var canvas = document.getElementById('squeak'),
+var canvas = document.getElementById('caffeine-canvas'),
     context = canvas.getContext('2d'),
     wind = document.getElementById('wind'),
     home = document.getElementById('home'),
@@ -297,30 +297,30 @@ forwardProjectedMouseEvents(
 
 spikeRendering()
 
-goHome = function (event) {
-  var rig = document.getElementById('cameraRig'),
-      currentPosition = camera.getAttribute('position')
+camera.setAttribute(
+  'animation',
+  'property: position; to: "0 0 5"; startEvents: gohome; dur: 1000')
+
+camera.setAttribute(
+  'animation__rotation',
+  'property: rotation; to: "5 0 0"; startEvents: gohome; dur: 1000')
+
+home.onclick = (event) => {
+  var lookControls = camera.components['look-controls']
 
   scene.goingHome = true
   spikeRendering()
 
-  camera.setAttribute('position', {x: currentPosition.x + 0.1, y: currentPosition.y, z: currentPosition.z})
-  camera.setAttribute('animation', 'property: position; to: 0 0 0')
-
-  camera.setAttribute('position', {x: 0, y: 0, z: 0})
-  camera.lookControls.pitchObject.rotation.x = 0
-  camera.lookControls.yawObject.rotation.y = 0
-
-  camera.setAttribute('animation', 'property: rotation; to: "5 0 0"')
-  camera.setAttribute('animation', 'property: position; to: ' + {x: currentPosition.x + 5, y: currentPosition.y, z: currentPosition.z})
+  lookControls.pitchObject.rotation.x = 0
+  lookControls.yawObject.rotation.y = 0
 
   home.blur()
   
   window.setTimeout(
     function() {scene.goingHome = false},
-    1000)}
-
-home.onclick = goHome
+    1000)
+  
+  camera.dispatchEvent(new Event('gohome'))}
   
 document.addEventListener(
   "keydown",

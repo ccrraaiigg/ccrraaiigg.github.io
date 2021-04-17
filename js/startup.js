@@ -1,6 +1,5 @@
 window.onload = function () {
   var magicWindow,
-      squeakDisplay,
       snapshot = "caffeine",
       iframe = window.top.document.getElementById("caffeine-frame")
   
@@ -45,7 +44,7 @@ window.onload = function () {
 	    console.log(
 	      "iOS hardware mute switch not overridden, HTML5 audio play failed",
 	      reason)})}}
-  
+    
     if (iframe) {
       iframe.contentWindow.focus()
       iframe.ontouchend = window.top.document.ontouchend}
@@ -53,17 +52,14 @@ window.onload = function () {
     div.ontouchend = window.top.document.ontouchend
     div.style.zIndex = 1000}
 
-  squeakDisplay = (
-    window.startCaffeine(
-      (document.getElementById('caffeine-canvas')),
-      snapshot,
-      "SqueakV46",
-      {
-        appID: "4599d316-a13e-46ef-92be-c7337899038c",
-        appName: "Caffeine",
-        appServer: "demo.blackpagedigital.com:8091"}))
-  
-  if (magicWindow) {magicWindow.squeakDisplay = squeakDisplay}}
+  window.startCaffeine(
+    (document.getElementById('caffeine-canvas')),
+    snapshot,
+    "SqueakV46",
+    {
+      appID: "d93ea2a2-bf59-4f59-bb21-c36c596c4488",
+      appName: "Caffeine",
+      appServer: "demo.blackpagedigital.com:8091"})}
 
 document.addEventListener(
   'mousedown',
@@ -74,18 +70,18 @@ document.addEventListener(
   function (event) {window.mousedown = false})
 
 window.getCSSRule = function (ruleName) {
-    ruleName = ruleName.toLowerCase();
-    var result = null;
-    var find = Array.prototype.find;
+  ruleName = ruleName.toLowerCase();
+  var result = null;
+  var find = Array.prototype.find;
 
-    find.call(document.styleSheets, styleSheet => {
-        result = find.call(styleSheet.cssRules, cssRule => {
-            return cssRule instanceof CSSStyleRule 
-                && cssRule.selectorText.toLowerCase() == ruleName;
-        });
-        return result != null;
+  find.call(document.styleSheets, styleSheet => {
+    result = find.call(styleSheet.cssRules, cssRule => {
+      return cssRule instanceof CSSStyleRule 
+        && cssRule.selectorText.toLowerCase() == ruleName;
     });
-    return result;
+    return result != null;
+  });
+  return result;
 }
 
 function makeEditorEditable(editor) {
@@ -135,7 +131,7 @@ function makeCanvasEditable(canvas) {
     "mouseleave",
     function () {
       event.target.blur()})
-      
+  
   canvas.tabindex = 1}
 
 window.makeCanvasEditable = makeCanvasEditable
@@ -208,9 +204,6 @@ window.startCaffeine = function(canvas, imageName, sourcesName, parameters) {
 
   spinner = window.top.document.getElementById("progress-spinner")
 
-  if (!spinner) {
-    spinner = window.document.getElementById("progress-spinner")}
-  
   squeakDisplay = SqueakJS.runSqueak(
     imageName + ".image",
     canvas,

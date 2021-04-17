@@ -21,7 +21,6 @@
  */
 
 "use strict";
-
 var magicWindow = window,
     isMagic;
 
@@ -46,6 +45,7 @@ if (isMagic) {
   progress.style.backgroundColor = 'rgb(255, 0, 0)';
   progress.style.transition = 'opacity 500ms';
   progress.style.opacity = 0;
+
   magicWindow.progress = progress;
   if (magicWindow.document.body) magicWindow.document.body.appendChild(progress);
 
@@ -61,6 +61,7 @@ if (isMagic) {
   thestatus.style.padding = '5px';
   thestatus.innerHTML = "<i>starting virtual machine...</i>";
   magicWindow.thestatus = thestatus;
+
   if (magicWindow.document.body) magicWindow.document.body.appendChild(thestatus);}
 
 
@@ -585,15 +586,16 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
     window.top.touch = touch;
 
     var recognizer = document.getElementById('text-recognizer');
-    recognizer.setAttribute('autocomplete', 'on');
-    recognizer.setAttribute('autocorrect', 'on');
-    recognizer.setAttribute('autocapitalize', 'on');
-    recognizer.setAttribute('spellcheck', 'on');
+    if (recognizer) {
+      recognizer.setAttribute('autocomplete', 'on');
+      recognizer.setAttribute('autocorrect', 'on');
+      recognizer.setAttribute('autocapitalize', 'on');
+      recognizer.setAttribute('spellcheck', 'on');
 
-    document.ontouchstart = (event) => {
-      if (event.touches[0].touchType != 'stylus') {
-	recognizer.style.zIndex = -10;
-	canvas.contentEditable = false;}}
+      document.ontouchstart = (event) => {
+	if (event.touches[0].touchType != 'stylus') {
+	  recognizer.style.zIndex = -10;
+	  canvas.contentEditable = false;}}}
       
     function touchToMouse(evt) {
       var type = null;
@@ -996,6 +998,7 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
       });
       return false;
     };
+
     window.onresize = function() {
       if (touch.orig) return; // manually resized
       // call resizeDone only if window size didn't change for 300ms
