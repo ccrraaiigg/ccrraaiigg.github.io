@@ -143,8 +143,10 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	translatedSelectedPoint = vectorFrom(planarEvent.detail.intersection.point),
 	planeCenter = centerOf(plane),
 	planeRotation = rotationOf(plane),
-	simplePlane = new THREE.PlaneGeometry().fromBufferGeometry(plane.components.geometry.geometry),
-	planeInCameraFrame = new THREE.PlaneGeometry().fromBufferGeometry(plane.components.geometry.geometry),
+//	simplePlane = new THREE.PlaneGeometry().fromBufferGeometry(plane.components.geometry.geometry),
+//	planeInCameraFrame = new THREE.PlaneGeometry().fromBufferGeometry(plane.components.geometry.geometry),
+	simplePlane = new THREE.PlaneGeometry().merge(plane.components.geometry.geometry),
+	planeInCameraFrame = new THREE.PlaneGeometry().merge(plane.components.geometry.geometry),
 	origin = new THREE.Vector3(0, 0, 0),
 	planeInCameraFrameVertices,
 	simplePlaneVertices,
@@ -161,9 +163,13 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	heightFactor,
 	selectionDistance
 
+    console.log(planarEvent.detail.intersection.point)
+
     // We'll grab the origin point from simplePlane, after we figure out its vertex index.
-    simplePlane.mergeVertices()
-    planeInCameraFrame.mergeVertices()
+//    planeInCameraFrame.mergeVertices()
+//    simplePlane.mergeVertices() 
+    THREE.BufferGeometryUtils.mergeVertices(planeInCameraFrame)
+    THREE.BufferGeometryUtils.mergeVertices(simplePlane)
     
     rotate(simplePlane, planeRotation)
     rotate(planeInCameraFrame, planeRotation)
@@ -173,22 +179,51 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     
     untranslate(planeInCameraFrame, cameraPoint)
     unrotate(planeInCameraFrame, cameraPoint)
-    planeInCameraFrameVertices = planeInCameraFrame.vertices
+//    planeInCameraFrameVertices = planeInCameraFrame.vertices
+    planeInCameraFrameVertices = planeInCameraFrame.getAttribute('position')
 
     // Choose the leftmost point from the camera's point of view.
-    if (planeInCameraFrameVertices[4].x < planeInCameraFrameVertices[6].x) {
-      originIndex = 4
-      upperRightIndex = 6
-      lowerLeftIndex = 5}
-    else {
-      originIndex = 6
-      upperRightIndex = 4
-      lowerLeftIndex = 7}
+//    if (planeInCameraFrameVertices[4].x < planeInCameraFrameVertices[6].x) {
+//      originIndex = 4
+//      upperRightIndex = 6
+//      lowerLeftIndex = 5}
+//    else {
+//      originIndex = 6
+//      upperRightIndex = 4
+//      lowerLeftIndex = 7}
 
-    simplePlaneVertices = simplePlane.vertices
-    planeOrigin = simplePlaneVertices[originIndex]
-    upperRight = simplePlaneVertices[upperRightIndex]
-    lowerLeft = simplePlaneVertices[lowerLeftIndex]
+//    if (planeInCameraFrameVertices.getX(0) < planeInCameraFrameVertices.getX(2)) {
+//      originIndex = 0
+//      upperRightIndex = 2
+//    lowerLeftIndex = 1}
+//    else {
+      originIndex = 0
+      upperRightIndex = 1
+  lowerLeftIndex = 2
+// }
+
+    //    simplePlaneVertices = simplePlane.vertices
+    simplePlaneVertices = simplePlane.getAttribute('position')
+
+    //    planeOrigin = simplePlaneVertices[originIndex]
+    //    upperRight = simplePlaneVertices[upperRightIndex]
+    //    lowerLeft = simplePlaneVertices[lowerLeftIndex]
+
+    planeOrigin = new THREE.Vector3(
+      simplePlaneVertices.getX(originIndex),
+      simplePlaneVertices.getY(originIndex),
+      simplePlaneVertices.getZ(originIndex))
+
+    upperRight = new THREE.Vector3(
+      simplePlaneVertices.getX(upperRightIndex),
+      simplePlaneVertices.getY(upperRightIndex),
+      simplePlaneVertices.getZ(upperRightIndex))
+
+    lowerLeft = new THREE.Vector3(
+      simplePlaneVertices.getX(lowerLeftIndex),
+      simplePlaneVertices.getY(lowerLeftIndex),
+      simplePlaneVertices.getZ(lowerLeftIndex))
+
     planarWidth = planeOrigin.distanceTo(upperRight)
     planarHeight = planeOrigin.distanceTo(lowerLeft)
 
@@ -210,7 +245,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     canvasEvent.projectedY = Math.floor((selectionDistance * Math.sin(theta)) * heightFactor)
     canvas.lastProjectedEvent = canvasEvent
     
-//  console.log(planarEvent.type + ' ' + canvasEvent.projectedX + ' ' + canvasEvent.projectedY)
+    console.log(planarEvent.type + ' ' + canvasEvent.projectedX + ' ' + canvasEvent.projectedY)
     canvas.dispatchEvent(canvasEvent)}
 
   document.addEventListener(
@@ -226,6 +261,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     if (lastProjectedEvent) {
       lastProjectedEvent.projectedX = lastProjectedEvent.projectedX + x
       lastProjectedEvent.projectedY = lastProjectedEvent.projectedY + y
+//      console.log(lastProjectedEvent.projectedX + ' ' + lastProjectedEvent.projectedY)
       canvas.dispatchEvent(lastProjectedEvent)}}
   
   plane.addEventListener(
@@ -353,7 +389,7 @@ document.addEventListener(
           20)} 
       else {
 	camera.components['wasd-controls'].data.fly = true
-	if (f.which === 69) goHome()}}})
+	if (f.which === 69) gohome()}}})
 
 // iOS doesn't do keyup events properly.
 document.body.addEventListener(
