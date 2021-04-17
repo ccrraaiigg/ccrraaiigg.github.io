@@ -15,7 +15,8 @@ window.onload = function () {
   console.log('starting Caffeine...')
 
   window.top.document.ontouchend = (event) => {
-    var div = window.top.document.getElementById("caffeine-div")
+    var div = window.top.document.getElementById("caffeine-div"),
+	canvas = document.getElementById('caffeine-canvas')
 
     
     if (!window.top.muteButtonOverridden) {
@@ -53,11 +54,11 @@ window.onload = function () {
     div.style.zIndex = 1000}
 
   window.startCaffeine(
-    (document.getElementById('caffeine-canvas')),
+    canvas,
     snapshot,
     "SqueakV46",
     {
-      appID: "d93ea2a2-bf59-4f59-bb21-c36c596c4488",
+      appID: canvas.appID,
       appName: "Caffeine",
       appServer: "demo.blackpagedigital.com:8091"})}
 

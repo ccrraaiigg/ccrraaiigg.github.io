@@ -163,7 +163,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	heightFactor,
 	selectionDistance
 
-    console.log(planarEvent.detail.intersection.point)
+//    console.log(planarEvent.detail.intersection.point)
 
     // We'll grab the origin point from simplePlane, after we figure out its vertex index.
 //    planeInCameraFrame.mergeVertices()
@@ -245,7 +245,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     canvasEvent.projectedY = Math.floor((selectionDistance * Math.sin(theta)) * heightFactor)
     canvas.lastProjectedEvent = canvasEvent
     
-    console.log(planarEvent.type + ' ' + canvasEvent.projectedX + ' ' + canvasEvent.projectedY)
+//    console.log(planarEvent.type + ' ' + canvasEvent.projectedX + ' ' + canvasEvent.projectedY)
     canvas.dispatchEvent(canvasEvent)}
 
   document.addEventListener(
@@ -335,11 +335,11 @@ spikeRendering()
 
 camera.setAttribute(
   'animation',
-  'property: position; to: "0 0 5"; startEvents: gohome; dur: 1000')
+  'property: position; to: "0 0 5"; startEvents: gohome; easing: easeInOutSine; dur: 800')
 
 camera.setAttribute(
   'animation__rotation',
-  'property: rotation; to: "5 0 0"; startEvents: gohome; dur: 1000')
+  'property: rotation; to: "5 0 0"; startEvents: gohome; easing: easeInOutSine; dur: 800')
 
 home.onclick = (event) => {
   var lookControls = camera.components['look-controls']
