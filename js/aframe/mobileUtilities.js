@@ -143,8 +143,6 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	translatedSelectedPoint = vectorFrom(planarEvent.detail.intersection.point),
 	planeCenter = centerOf(plane),
 	planeRotation = rotationOf(plane),
-//	simplePlane = new THREE.PlaneGeometry().fromBufferGeometry(plane.components.geometry.geometry),
-//	planeInCameraFrame = new THREE.PlaneGeometry().fromBufferGeometry(plane.components.geometry.geometry),
 	simplePlane = new THREE.PlaneGeometry().merge(plane.components.geometry.geometry),
 	planeInCameraFrame = new THREE.PlaneGeometry().merge(plane.components.geometry.geometry),
 	origin = new THREE.Vector3(0, 0, 0),
@@ -163,11 +161,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	heightFactor,
 	selectionDistance
 
-//    console.log(planarEvent.detail.intersection.point)
-
     // We'll grab the origin point from simplePlane, after we figure out its vertex index.
-//    planeInCameraFrame.mergeVertices()
-//    simplePlane.mergeVertices() 
     THREE.BufferGeometryUtils.mergeVertices(planeInCameraFrame)
     THREE.BufferGeometryUtils.mergeVertices(simplePlane)
     
@@ -179,35 +173,14 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     
     untranslate(planeInCameraFrame, cameraPoint)
     unrotate(planeInCameraFrame, cameraPoint)
-//    planeInCameraFrameVertices = planeInCameraFrame.vertices
     planeInCameraFrameVertices = planeInCameraFrame.getAttribute('position')
 
     // Choose the leftmost point from the camera's point of view.
-//    if (planeInCameraFrameVertices[4].x < planeInCameraFrameVertices[6].x) {
-//      originIndex = 4
-//      upperRightIndex = 6
-//      lowerLeftIndex = 5}
-//    else {
-//      originIndex = 6
-//      upperRightIndex = 4
-//      lowerLeftIndex = 7}
+    originIndex = 0
+    upperRightIndex = 1
+    lowerLeftIndex = 2
 
-//    if (planeInCameraFrameVertices.getX(0) < planeInCameraFrameVertices.getX(2)) {
-//      originIndex = 0
-//      upperRightIndex = 2
-//    lowerLeftIndex = 1}
-//    else {
-      originIndex = 0
-      upperRightIndex = 1
-  lowerLeftIndex = 2
-// }
-
-    //    simplePlaneVertices = simplePlane.vertices
     simplePlaneVertices = simplePlane.getAttribute('position')
-
-    //    planeOrigin = simplePlaneVertices[originIndex]
-    //    upperRight = simplePlaneVertices[upperRightIndex]
-    //    lowerLeft = simplePlaneVertices[lowerLeftIndex]
 
     planeOrigin = new THREE.Vector3(
       simplePlaneVertices.getX(originIndex),
@@ -245,14 +218,14 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     canvasEvent.projectedY = Math.floor((selectionDistance * Math.sin(theta)) * heightFactor)
     canvas.lastProjectedEvent = canvasEvent
     
-//    console.log(planarEvent.type + ' ' + canvasEvent.projectedX + ' ' + canvasEvent.projectedY)
     canvas.dispatchEvent(canvasEvent)}
 
   document.addEventListener(
     'keydown',
     function (event) {
       scene.typing = true
-      spikeRendering()})
+      spikeRendering()
+      if ((event.which === 88) && !squeakDisplay.vm) document.getElementById('home').click()})
 
   plane.movemouse = function (x, y) {
     var canvas = document.getElementById('caffeine-canvas'),
@@ -261,7 +234,6 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     if (lastProjectedEvent) {
       lastProjectedEvent.projectedX = lastProjectedEvent.projectedX + x
       lastProjectedEvent.projectedY = lastProjectedEvent.projectedY + y
-//      console.log(lastProjectedEvent.projectedX + ' ' + lastProjectedEvent.projectedY)
       canvas.dispatchEvent(lastProjectedEvent)}}
   
   plane.addEventListener(
@@ -335,7 +307,7 @@ spikeRendering()
 
 camera.setAttribute(
   'animation',
-  'property: position; to: "0 0 5"; startEvents: gohome; easing: easeInOutSine; dur: 800')
+  'property: position; to: "0 0 -2.5"; startEvents: gohome; easing: easeInOutSine; dur: 800')
 
 camera.setAttribute(
   'animation__rotation',
@@ -358,39 +330,6 @@ home.onclick = (event) => {
   
   camera.dispatchEvent(new Event('gohome'))}
   
-document.addEventListener(
-  "keydown",
-  f => {
-    if (!window.mobilecheck() && !window.squeakDisplay.vm) {
-      var camera = document.getElementById('camera')
-
-      if (f.which === 82) {
-	var rotx,
-	    roty,
-	    rotxdeg,
-	    position = camera.getAttribute('position'),
-	    plane = document.getElementById('squeak-plane'),
-	    posz = position.z - plane.getAttribute('position').z
-      
-	rotx = Math.atan2(-(position.y - plane.getAttribute('position').y), posz)
-
-	if (posz >= 0) {
-	  roty = -Math.atan2(position.x * Math.cos(rotx), posz)}
-	else {
-	  roty = Math.atan2(position.x * Math.cos(rotx), posz)}
-
-	rotxdeg = rotx * 180 / Math.PI
-	if (rotxdeg < -89) rotxdeg = rotxdeg + 180
-	if (rotxdeg > 0) rotxdeg = -rotxdeg
-	
-	camera.components['look-controls'].init()
-	window.setTimeout(
-	  () => {camera.setAttribute('rotation', {x: rotxdeg, y: -(roty * 180 / Math.PI), z: 0})},
-          20)} 
-      else {
-	camera.components['wasd-controls'].data.fly = true
-	if (f.which === 69) gohome()}}})
-
 // iOS doesn't do keyup events properly.
 document.body.addEventListener(
   "keydown",

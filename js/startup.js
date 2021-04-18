@@ -58,7 +58,7 @@ window.onload = function () {
     snapshot,
     "SqueakV46",
     {
-      appID: canvas.appID,
+      appID: canvas.getAttribute('appID'),
       appName: "Caffeine",
       appServer: "demo.blackpagedigital.com:8091"})}
 
