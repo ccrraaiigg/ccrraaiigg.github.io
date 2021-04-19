@@ -43,11 +43,6 @@
 	  <img id="logo"
 	       src="pictures/backgrounds/bootscreen/bootscreen1024x512.jpeg">
 
-	  <svg width="20" height="20" viewbox="0 0 20 20">
-
-	    <path id="foobly"
-		  d=" M 20 10 A 10 10 0 1 1 19 7"></path></svg>
-
 	</a-assets>
 	
 	<a-entity class="squeaky"
@@ -65,6 +60,34 @@
                   position="0 10 -8"
 		  mousemove
 		  canvas-updater></a-entity>
+
+	<a-box id="squeak-frame-top"
+	       position="0 14.60 -7.9"
+	       width="15"
+	       height="0.25"
+	       depth="0.25"
+	       color="gray"></a-box>
+
+	<a-box id="squeak-frame-bottom"
+	       position="0 5.40 -7.9"
+	       width="15"
+	       height="0.25"
+	       depth="0.25"
+	       color="gray"></a-box>
+
+	<a-box id="squeak-frame-left"
+	       position="-7.25 10 -7.9"
+	       width="0.25"
+	       height="9.7"
+	       depth="0.25"
+	       color="gray"></a-box>
+
+	<a-box id="squeak-frame-right"
+	       position="7.25 10 -7.9"
+	       width="0.25"
+	       height="9.7"
+	       depth="0.25"
+	       color="gray"></a-box>
 
 	<div id="progress-spinner"
 	     style="opacity: 0.8;

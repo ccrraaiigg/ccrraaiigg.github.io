@@ -307,7 +307,7 @@ spikeRendering()
 
 camera.setAttribute(
   'animation',
-  'property: position; to: "0 0 -2.5"; startEvents: gohome; easing: easeInOutSine; dur: 800')
+  'property: position; to: "0 0 -1.96"; startEvents: gohome; easing: easeInOutSine; dur: 800')
 
 camera.setAttribute(
   'animation__rotation',
