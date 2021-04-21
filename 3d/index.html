@@ -12,6 +12,7 @@
 	  href="manifest.json">
 
     <body>
+      <script type="text/javascript" src="/js/hex.js"></script>
       <script src="js/aframe/components/mousemove.js"></script>
       <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
       
@@ -161,6 +162,8 @@
 		    ui></a-entity>
 
 	  <a-entity id="camera"
+		    position="0 10 50"
+
 		    camera
 		    look-controls
 		    wasd-controls></a-entity></a-entity>
@@ -185,9 +188,12 @@
 	    console.log('squeak plane hit')})
 	  </script>
 	  -->
-	  
+
 	  <script src="js/squeakjs/squeak.js"></script>
 	  <script src="js/startup.js"></script>
 	  <script src="js/oscrelay/node_modules/osc/dist/osc-browser.min.js"></script>
 	  <script src="js/aframe/mobileUtilities.js"></script>
-</body></html>
+	  <script>
+	    setTimeout(() => {[].slice.call(document.getElementsByClassName('environment')).forEach(each => {
+	      if (each.components['light']) {each.components['light'].light.intensity = 0}})}, 2000)
+	  </script></body></html>

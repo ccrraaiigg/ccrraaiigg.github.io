@@ -69,7 +69,7 @@ function spikeRendering () {
   else {
     if (scene.hasAnimations) timeout = 10000
     else {
-      if (scene.goingHome) timeout = 1000
+      if (scene.goinghome) timeout = 1000
       else {
 	// Raising windows can take a while.
 	if (window.mousedown) timeout = 1500
@@ -116,10 +116,12 @@ function rotationOf(entity) {
 function rotate(geometry, rotation) {
   var degreesToRadians = Math.PI / 180
   
-  geometry.rotateX(rotation.x * degreesToRadians).rotateY(rotation.y * degreesToRadians).rotateZ(rotation.z * degreesToRadians)}
+  geometry
+    .rotateX(rotation.x * degreesToRadians)
+    .rotateY(rotation.y * degreesToRadians)
+    .rotateZ(rotation.z * degreesToRadians)}
 
 function untranslate(geometry, point) {
-
   geometry.translate(
     0 - point.x,
     0 - point.y,
@@ -225,7 +227,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     function (event) {
       scene.typing = true
       spikeRendering()
-      if ((event.which === 88) && !squeakDisplay.vm) document.getElementById('home').click()})
+      if ((event.which === 88) && !squeakDisplay.vm && !canvas.otherCanvasActive) document.getElementById('home').click()})
 
   plane.movemouse = function (x, y) {
     var canvas = document.getElementById('caffeine-canvas'),
@@ -261,7 +263,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
       spikeRendering()
       if (!(document.getElementById('scene').is('vr-mode'))) disableControls('look-controls')
       dispatch(event)})
-  
+
   document.addEventListener(
     'mousemove',
     function (event) {
@@ -316,7 +318,7 @@ camera.setAttribute(
 home.onclick = (event) => {
   var lookControls = camera.components['look-controls']
 
-  scene.goingHome = true
+  scene.goinghome = true
   spikeRendering()
 
   lookControls.pitchObject.rotation.x = 0
@@ -325,7 +327,7 @@ home.onclick = (event) => {
   home.blur()
   
   window.setTimeout(
-    function() {scene.goingHome = false},
+    function() {scene.goinghome = false},
     1000)
   
   camera.dispatchEvent(new Event('gohome'))}

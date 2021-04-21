@@ -53,6 +53,8 @@ window.onload = function () {
     div.ontouchend = window.top.document.ontouchend
     div.style.zIndex = 1000}
 
+  canvas = document.getElementById('caffeine-canvas')
+
   window.startCaffeine(
     canvas,
     snapshot,

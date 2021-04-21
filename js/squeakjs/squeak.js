@@ -862,7 +862,7 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
 */
     };
     document.onkeydown = function(evt) {
-      if (squeakDisplay.vm) document.body.style.cursor = 'none';
+      if (top.squeakDisplay.vm) document.body.style.cursor = 'none';
       checkFullscreen();
       if (canvas.otherCanvasActive) {
 	evt.preventDefault();
