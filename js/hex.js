@@ -137,14 +137,7 @@ window.onload = function () {
 	else {
 	  spinner.style.opacity = 0
 	  div.style.opacity = 0
-	  div.style.pointerEvents = 'none'}}
-
-      if (window.WebMidi) {
-	WebMidi.enable(
-	  (err) => {
-	    if (err) {console.warn(err)}
-	    else {console.log("Sysex is enabled.")}},
-	  true)}},
+	  div.style.pointerEvents = 'none'}}},
     1500)
 
     window.setTimeout(
