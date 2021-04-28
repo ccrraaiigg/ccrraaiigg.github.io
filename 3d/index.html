@@ -10,8 +10,7 @@
     <link rel="manifest"
 	  href="manifest.json">
 
-    <body>
-      <script src="js/aframe/components/mousemove.js"></script>
+    <body draggable="false">
       <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
 
       <script type="text/javascript" src="/js/hydra.js"></script>
@@ -63,7 +62,6 @@
 			    height: 8.7"
 
                   position="0 10 -8"
-		  mousemove
 		  canvas-updater></a-entity>
 
 	<a-box id="squeak-frame-top"
@@ -174,6 +172,7 @@
 
 	<input id="home"
 	       type="image"
+	       draggable="false"
 	       src="pictures/icons/a-frame/home.png"
 	       tabindex="-1"
 	       width="70"

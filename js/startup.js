@@ -246,7 +246,7 @@ window.startCaffeine = function(canvas, imageName, sourcesName, parameters) {
     return false
   }
   document.body.ondragleave = function(evt) {
-    if (drop) drop.style.borderColor = ""
+    if (window.drop) drop.style.borderColor = ""
   }
   document.body.ondrop = function(evt) {
     evt.preventDefault()

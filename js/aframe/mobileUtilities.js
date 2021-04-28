@@ -133,12 +133,13 @@ function unrotate(geometry, rotation) {
 
 function forwardProjectedMouseEvents(camera, plane, canvas) {
   var dispatch = function (planarEvent) {
-    if ((!planarEvent.detail) || (!planarEvent.detail.intersection)) return
     var canvasEvent = new MouseEvent(planarEvent.type),
 	cameraPoint = centerOf(camera),
 	cameraRotation = rotationOf(camera),
-	selectedPoint = vectorFrom(planarEvent.detail.intersection.point),
-	translatedSelectedPoint = vectorFrom(planarEvent.detail.intersection.point),
+	intersection = scene.components['raycaster'].getIntersection(plane),
+	intersectionPoint,
+	selectedPoint,
+	translatedSelectedPoint,
 	planeCenter = centerOf(plane),
 	planeRotation = rotationOf(plane),
 	simplePlane = new THREE.PlaneGeometry().merge(plane.components.geometry.geometry),
@@ -159,6 +160,11 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	heightFactor,
 	selectionDistance
 
+    if (!intersection) return
+    intersectionPoint = intersection.point
+    selectedPoint = vectorFrom(intersectionPoint),
+    translatedSelectedPoint = vectorFrom(intersectionPoint),
+    
     // We'll grab the origin point from simplePlane, after we figure out its vertex index.
     THREE.BufferGeometryUtils.mergeVertices(planeInCameraFrame)
     THREE.BufferGeometryUtils.mergeVertices(simplePlane)
@@ -262,26 +268,26 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
       squeakDisplay.vm = SqueakJS.vm
 
       if (squeakDisplay.unfreeze) {
-	var foo = squeakDisplay.unfreeze
+	var foo = squeakDisplay.unfreeze,
+	    mouseup
 
         squeakDisplay.unfreeze = null
-
-	setTimeout(
-	  () => {
-	    if (!(document.getElementById('scene').is('vr-mode'))) disableControls('look-controls')
-	    dispatch(event)},
-	  1)
+	mouseup = new MouseEvent('mouseup', event)
 
 	try {foo()}
-	catch (error) {}}
-
+	catch (error) {
+	  if (!(document.getElementById('scene').is('vr-mode'))) disableControls('look-controls')
+	  dispatch(event)
+	  dispatch(mouseup)}}
+	  
       if (!(document.getElementById('scene').is('vr-mode'))) disableControls('look-controls')
       dispatch(event)})
 
   document.addEventListener(
     'mousemove',
     function (event) {
-      spikeRendering()})
+      spikeRendering()
+      dispatch(event)})
 
   plane.addEventListener(
     'mouseup',
@@ -320,12 +326,15 @@ window.mousedown = false
 context.fillStyle = 'black'
 context.fillRect(0, 0, 1400, 870)
 
-forwardProjectedMouseEvents(
-  document.getElementById('camera'),
-  document.getElementById('squeak-plane'),
-  canvas)
+setTimeout(
+  () => {
+    spikeRendering()
 
-spikeRendering()
+    forwardProjectedMouseEvents(
+      document.getElementById('camera'),
+      document.getElementById('squeak-plane'),
+      canvas)},
+  3000)
 
 camera.setAttribute(
   'animation',
