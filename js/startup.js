@@ -57,8 +57,9 @@ window.onload = function () {
       iframe.contentWindow.focus()
       iframe.ontouchend = window.top.document.ontouchend}
 
-    div.ontouchend = window.top.document.ontouchend
-    div.style.zIndex = 1000}
+    if (div) {
+      div.ontouchend = window.top.document.ontouchend
+      div.style.zIndex = 1000}}
 
   canvas = document.getElementById('caffeine-canvas')
 
@@ -302,3 +303,4 @@ window.downloadFile = function(sUrl) {
 
 window.downloadFile.isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1
 window.downloadFile.isSafari = navigator.userAgent.toLowerCase().indexOf('safari') > -1
+window.printAllProcesses = () => {console.log(SqueakJS.vm.printAllProcesses())}

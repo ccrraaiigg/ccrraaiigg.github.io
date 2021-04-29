@@ -829,7 +829,7 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
 
     // wheel stuff
     document.addEventListener(
-      "mousewheel",
+      "wheel",
       function(event) {
 	if (!display.vm) return true;
 
