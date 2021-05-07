@@ -21,7 +21,7 @@ function slowRender () {
 	scene.renderer.render(this.object3D, this.camera, this.renderTarget)
       
 	if (this.isPlaying) {this.tock(this.time, delta)}}).bind(this),
-      1000)}}
+      5000)}}
 
 function normalRender () {
   var delta
@@ -142,8 +142,8 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	translatedSelectedPoint,
 	planeCenter = centerOf(plane),
 	planeRotation = rotationOf(plane),
-	simplePlane = new THREE.PlaneGeometry().merge(plane.components.geometry.geometry),
-	planeInCameraFrame = new THREE.PlaneGeometry().merge(plane.components.geometry.geometry),
+	simplePlane = new THREE.PlaneGeometry(),
+	planeInCameraFrame = new THREE.PlaneGeometry(),
 	origin = new THREE.Vector3(0, 0, 0),
 	planeInCameraFrameVertices,
 	simplePlaneVertices,
@@ -162,6 +162,9 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 
     if (!intersection) {intersection = scene.components['raycaster'].getIntersection(plane)}
     if (!intersection) return
+
+    simplePlane.copy(plane.components.geometry.geometry)
+    planeInCameraFrame.copy(plane.components.geometry.geometry)
     intersectionPoint = intersection.point
     selectedPoint = vectorFrom(intersectionPoint),
     translatedSelectedPoint = vectorFrom(intersectionPoint),
@@ -224,7 +227,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     canvas.lastProjectedEvent = canvasEvent
     
     canvas.dispatchEvent(canvasEvent)}
-
+  
   document.addEventListener(
     'wheel',
     function (event) {
@@ -292,7 +295,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
       disableControls('wasd-controls')
 
       if (!mousedown) {
-	squeakDisplay.vm = SqueakJS.vm
+	if (squeakDisplay) squeakDisplay.vm = SqueakJS.vm
 	getCSSRule('canvas.a-canvas.a-mouse-cursor-hover:hover').style.cssText = "cursor: normal;"
 	getCSSRule('.a-canvas.a-grab-cursor:hover').style.cssText = "cursor: normal;"
 	plane.focus()
@@ -307,8 +310,6 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     function (event) {
       spikeRendering()
 
-      squeakDisplay.vm = SqueakJS.vm
-
       if (squeakDisplay.unfreeze) {
 	var foo = squeakDisplay.unfreeze,
 	    mouseup
@@ -320,7 +321,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	catch (error) {
 	  if (!(document.getElementById('scene').is('vr-mode'))) disableControls('look-controls')
 	  dispatch(event)
-	  dispatch(mouseup)}}
+	  setTimeout(() => {dispatch(mouseup)}, 100)}}
 	  
       if (!(document.getElementById('scene').is('vr-mode'))) disableControls('look-controls')
       dispatch(event)})
@@ -340,6 +341,18 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
       dispatch(event)})
 
   plane.addEventListener(
+    'keydown',
+    function (event) {
+      plane.focus()
+      dispatch(event)})
+  
+  plane.addEventListener(
+    'keyup',
+    function (event) {
+      plane.focus()
+      dispatch(event)})
+  
+  plane.addEventListener(
     'mouseleave',
     function (event) {
       enableControls('look-controls')
@@ -350,6 +363,7 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
   document.getElementById('camera').components['wasd-controls'].data.fly = true
 
       // Trick squeak.js into not queueing keyboard events.
+      canvas.otherCanvasActive = false
       if (squeakDisplay) squeakDisplay.vm = null
 
       if (!squeakDisplay.unfreeze && morphs.length == 0) {
@@ -380,7 +394,7 @@ setTimeout(
 
 camera.setAttribute(
   'animation',
-  'property: position; to: "0 0 -1.96"; startEvents: gohome; easing: easeInOutSine; dur: 800')
+  'property: position; to: "0 0 -1.5"; startEvents: gohome; easing: easeInOutSine; dur: 800')
 
 camera.setAttribute(
   'animation__rotation',

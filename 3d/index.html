@@ -1,7 +1,10 @@
 <html>
   <head>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@b78a9f4552e01d2cd933f26b07a223c43007a97c/dist/aframe-master.min.js"></script>
+    <script src="https://unpkg.com/aframe-super-keyboard@latest/dist/aframe-super-keyboard.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.2.0/dist/aframe-environment-component.min.js"></script>
+    <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/super-hands@^3.0.1/dist/super-hands.min.js"></script>
     <script src="js/aframe/components/canvas-updater.js"></script>
 
     <link href="css/squeakjs.css"
@@ -19,6 +22,24 @@
       <script type="text/javascript" src="https://unpkg.com/tone@latest/build/Tone.js"></script>
       <script type="text/javascript" src="/js/hex.js"></script>
 
+      <script>
+	document.addEventListener(
+	  'keydown',
+	  (event) => {
+	    document.querySelectorAll('.keydownlistener').forEach(
+	      (listener) => {
+		if (listener.onkeydown && listener.mouseentered)
+		  listener.onkeydown(event)})})
+
+	document.addEventListener(
+	  'mouseleave',
+	  (event) => {
+	    document.querySelectorAll('.mouseleavelistener').forEach(
+	      (listener) => {
+		if (listener.onkeydown && listener.mouseentered) {
+		  listener.mouseentered = false
+		  listener.onmouseleave(event)}})})
+      </script>
       <a-scene id="scene"
 
 	       raycaster="showLine: false;
@@ -47,8 +68,149 @@
 	  <img id="logo"
 	       src="pictures/backgrounds/bootscreen/bootscreen1024x512.jpeg">
 
+	  <canvas class="keydownlistener mouseleavelistener"
+		  id="worldly-cube-face-canvas-1"
+		  width="200"
+		  height="200"
+		  style="cursor: default"></canvas>
+
+	  <canvas id="worldly-cube-face-canvas-2"
+		  width="200"
+		  height="200"
+		  style="cursor: default"></canvas>
+
+  	  <canvas id="worldly-cube-face-canvas-3"
+		  width="400"
+		  height="200"
+		  style="cursor: default"></canvas>
+
+  	  <canvas id="worldly-cube-face-canvas-4"
+		  width="400"
+		  height="200"
+		  style="cursor: default"></canvas>
+
+  	  <canvas id="worldly-cube-face-canvas-5"
+		  width="400"
+		  height="200"
+		  style="cursor: default"></canvas>
+
+  	  <canvas id="worldly-cube-face-canvas-6"
+		  width="400"
+		  height="200"
+		  style="cursor: default"></canvas>
+
 	</a-assets>
-	
+
+	<!-- the first Worldly cube -->
+
+<!--
+	<a-entity id="worldly-cube"
+		  hoverable
+		  grabbable
+		  stretchable
+		  draggable
+		  dropppable>
+-->
+
+	  <a-entity class="squeaky"
+		    id="worldly-cube-face-1"
+
+		    material="shader: flat;
+			      transparent: false;
+			      opacity: 0.8;
+			      src: #worldly-cube-face-canvas-1"
+
+                    geometry="primitive: plane;
+			      width: 2;
+			      height: 2"
+
+                    position="-2 5 0"
+		    rotation="0 270 0"
+		    canvas-updater></a-entity>
+		    
+	  <a-entity class="squeaky"
+		    id="worldly-cube-face-2"
+
+		    material="shader: flat;
+			      transparent: false;
+			      opacity: 0.8;
+			      src: #worldly-cube-face-canvas-2"
+
+                    geometry="primitive: plane;
+			      width: 2;
+			      height: 2"
+
+                    position="2 5 0"
+		    rotation="0 90 0"
+		    canvas-updater></a-entity>
+		    
+	  <a-entity class="squeaky"
+		    id="worldly-cube-face-3"
+
+		    material="shader: flat;
+			      transparent: false;
+			      opacity: 0.8;
+			      src: #worldly-cube-face-canvas-3"
+
+                    geometry="primitive: plane;
+			      width: 4;
+			      height: 2"
+
+                    position="0 5 1"
+		    rotation="0 0 0"
+		    canvas-updater></a-entity>
+		    
+	  <a-entity class="squeaky"
+		    id="worldly-cube-face-4"
+
+		    material="shader: flat;
+			      transparent: false;
+			      opacity: 0.8;
+			      src: #worldly-cube-face-canvas-4"
+
+                    geometry="primitive: plane;
+			      width: 4;
+			      height: 2"
+
+                    position="0 5 -1"
+		    rotation="0 90 0"
+		    canvas-updater></a-entity>
+		    
+	  <a-entity class="squeaky"
+		    id="worldly-cube-face-5"
+
+		    material="shader: flat;
+			      transparent: false;
+			      opacity: 0.8;
+			      src: #worldly-cube-face-canvas-5"
+
+                    geometry="primitive: plane;
+			      width: 4;
+			      height: 2"
+
+                    position="0 6 0"
+		    rotation="90 0 0"
+		    canvas-updater></a-entity>
+		    
+	  <a-entity class="squeaky"
+		    id="worldly-cube-face-6"
+
+		    material="shader: flat;
+			      transparent: false;
+			      opacity: 0.8;
+			      src: #worldly-cube-face-canvas-6"
+
+                    geometry="primitive: plane;
+			      width: 4;
+			      height: 2"
+
+                    position="0 4 0"
+		    rotation="90 0 0"
+		    canvas-updater></a-entity>
+	<!--
+</a-entity>
+-->
+		    
 	<a-entity class="squeaky"
 		  id="squeak-plane"
 
@@ -58,37 +220,37 @@
 			    src: #caffeine-canvas"
 
                   geometry="primitive: plane;
-			    width: 14;
-			    height: 8.7"
+			    width: 14.4;
+			    height: 9"
 
                   position="0 10 -8"
 		  canvas-updater></a-entity>
 
 	<a-box id="squeak-frame-top"
-	       position="0 14.60 -7.9"
-	       width="15"
+	       position="0 14.75 -7.9"
+	       width="15.4"
 	       height="0.25"
 	       depth="0.25"
 	       color="gray"></a-box>
 
 	<a-box id="squeak-frame-bottom"
-	       position="0 5.40 -7.9"
-	       width="15"
+	       position="0 5.25 -7.9"
+	       width="15.4"
 	       height="0.25"
 	       depth="0.25"
 	       color="gray"></a-box>
 
 	<a-box id="squeak-frame-left"
-	       position="-7.25 10 -7.9"
+	       position="-7.45 10 -7.9"
 	       width="0.25"
-	       height="9.7"
+	       height="10"
 	       depth="0.25"
 	       color="gray"></a-box>
 
 	<a-box id="squeak-frame-right"
-	       position="7.25 10 -7.9"
+	       position="7.45 10 -7.9"
 	       width="0.25"
-	       height="9.7"
+	       height="10"
 	       depth="0.25"
 	       color="gray"></a-box>
 
@@ -125,14 +287,13 @@
 		  sound="src: #wind-sound;
 			 loop: true"></a-entity>
 	
-	
 	<a-entity id="cameraRig"
 		  position="0 10 0"
 		  rotation>
 
 	  <a-entity id="left-hand"
+		    sphere-collider="objects: a-box"
 		    laser-controls="hand: left"
-		    hand-controls="hand: left"
 
 		    raycaster="objects: .squeaky;
 			       far: 1000"
@@ -140,29 +301,33 @@
 		    line="color: red; 
 			  opacity: 0.75"
 		    
+
+
+
 		    teleport-controls="cameraRig: #cameraRig; 
 				       button: grip;
 				       hitCylinderColor: #ff3468; 
 				       curveHitColor: #ff3468; 
 				       curveMissColor: #333333; 
 				       curveLineWidth: 0.01"
-		    
-		    brush
-		    ui></a-entity>
+
+		    super-hands></a-entity>
 
 	  <a-entity id="right-hand"
+		    sphere-collider="objects: a-box"
 		    laser-controls="hand: right"
-		    hand-controls="hand: right"
 
 		    raycaster="objects: .squeaky;
 			       far: 1000"
 
 		    line="color: red; 
 			  opacity: 0.75"
-		    
-		    brush
-		    ui></a-entity>
 
+		    super-hands></a-entity>
+
+
+	  <a-box color="gray"
+	  
 	  <a-entity id="camera"
 		    position="0 10 50"
 
@@ -184,12 +349,19 @@
 		      position: absolute;
 		      right: 10;
 		      top: 10"></a-scene>
-      
-	  <script src="js/squeakjs/squeak.js"></script>
-	  <script src="js/startup.js"></script>
-	  <script src="js/aframe/platform.js"></script>
-	  <script src="js/oscrelay/node_modules/osc/dist/osc-browser.min.js"></script>
-	  <script>
-	    setTimeout(() => {[].slice.call(document.getElementsByClassName('environment')).forEach(each => {
-	      if (each.components['light']) {each.components['light'].light.intensity = 0}})}, 2000)
-	  </script></body></html>
+
+      <script>
+	var hand
+
+	hand = document.getElementById('right-hand')
+	hand.addEventListener('pinchstarted', (event) => {console.log(event)})
+	hand.addEventListener('pinchended', (event) => {console.log(event)})
+      </script>
+      <script src="js/squeakjs/squeak.js"></script>
+      <script src="js/startup.js"></script>
+      <script src="js/aframe/platform.js"></script>
+      <script src="js/oscrelay/node_modules/osc/dist/osc-browser.min.js"></script>
+      <script>
+	setTimeout(() => {[].slice.call(document.getElementsByClassName('environment')).forEach(each => {
+	  if (each.components['light']) {each.components['light'].light.intensity = 0}})}, 2000)
+</script></body></html>

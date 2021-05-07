@@ -10,13 +10,18 @@
 //
 // caffeine.tether.push(caffeine.tether)
 //
-// You can send simple messages Caffeine's tether object like so:
+// You can send simple messages to Caffeine's tether object like so:
+//
+// ***
 //
 // caffeine.tether.sendMessage(
 //   {
 //     'selector': 'echo:',
 //     'arguments': [3]},
+//
 // (result) => {console.log(result)})
+//
+// ***
 //
 // Tether also enables sending complex messages to Caffeine's other
 // objects, including its compiler. For details, see /js/squeakjs/tether/tether.js

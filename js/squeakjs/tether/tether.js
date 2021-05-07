@@ -19,14 +19,19 @@
 //
 // caffeine.tether.push(caffeine.tether)
 //
-// You can send messages Caffeine's tether object like so:
+// You can send messages to Caffeine's tether object like so:
+//
+// ***
 //
 // caffeine.tether.sendMessage(
 //   {
 //     'selector': 'echo:',
 //     'arguments': [3]},
+// 
 //   (result) => {console.log(result)})
 //
+// ***
+// 
 // Caffeine responds with messages sent via postMessage(). See
 // /js/squeakjs/tether/handler.js for the handler to use for them.
 

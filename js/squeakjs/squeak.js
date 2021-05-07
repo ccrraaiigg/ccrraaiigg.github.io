@@ -355,6 +355,8 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
     }
   }
 
+  window.recordMouseEvent = recordMouseEvent;
+  
   function recordKeyboardEvent(key, timestamp, display, eventQueue) {
     if (!display.vm) return;
     var code = (display.buttons >> 3) << 8 | key;
@@ -445,22 +447,23 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
       display.cursorCanvas && display.cursorCanvas.classList.add("pixelated");
     }
 
-    var eventQueue = null;
+    display.eventQueue = null;
+    display.options = options;
     display.reset = function() {
-      eventQueue = null;
+      display.eventQueue = null;
       display.signalInputEvent = null;
       display.lastTick = 0;
       display.getNextEvent = function(firstEvtBuf, firstOffset) {
         // might be called from VM to get queued event
-        eventQueue = []; // create queue on first call
-        eventQueue.push = function(evt) {
-          eventQueue.offset = Date.now() - evt[1]; // get epoch from first event
-          delete eventQueue.push;                  // use original push from now on
-          eventQueue.push(evt);
+        display.eventQueue = []; // create queue on first call
+        display.eventQueue.push = function(evt) {
+          display.eventQueue.offset = Date.now() - evt[1]; // get epoch from first event
+          delete display.eventQueue.push;                  // use original push from now on
+          display.eventQueue.push(evt);
         };
         display.getNextEvent = function(evtBuf, timeOffset) {
-          var evt = eventQueue.shift();
-          if (evt) makeSqueakEvent(evt, evtBuf, timeOffset - eventQueue.offset);
+          var evt = display.eventQueue.shift();
+          if (evt) makeSqueakEvent(evt, evtBuf, timeOffset - display.eventQueue.offset);
           else evtBuf[0] = Squeak.EventTypeNone;
         };
         display.getNextEvent(firstEvtBuf, firstOffset);
@@ -469,6 +472,8 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
     display.reset();
 
     var checkFullscreen = setupFullscreen(display, canvas, options);
+    window.checkFullscreen = checkFullscreen;
+    
     display.fullscreenRequest = function(fullscreen, thenDo) {
       // called from primitive to change fullscreen mode
       if (display.fullscreen != fullscreen) {
@@ -531,7 +536,7 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
       try {
         display.clipboardString = text;
         // simulate paste event for Squeak
-        fakeCmdOrCtrlKey('v'.charCodeAt(0), timestamp, display, eventQueue);
+        fakeCmdOrCtrlKey('v'.charCodeAt(0), timestamp, display, display.eventQueue);
       } catch(err) {
         console.error("paste error " + err);
       }
@@ -540,7 +545,7 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
       if (!display.vm) return true;
       // simulate copy event for Squeak so it places its text in clipboard
       display.clipboardStringChanged = false;
-      fakeCmdOrCtrlKey((key || 'c').charCodeAt(0), timestamp, display, eventQueue);
+      fakeCmdOrCtrlKey((key || 'c').charCodeAt(0), timestamp, display, display.eventQueue);
       var start = Date.now();
       // now interpret until Squeak has copied to the clipboard
       while (!display.clipboardStringChanged && Date.now() - start < 500)
@@ -553,27 +558,29 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
         console.error("copy error " + err);
       }
     };
+
     canvas.onmousedown = function(evt) {
       if (!document.body.style.softwareCursor) document.body.style.cursor = '';
       checkFullscreen();
-      recordMouseEvent('mousedown', evt, canvas, display, eventQueue, options);
+      recordMouseEvent('mousedown', evt, canvas, display, display.eventQueue, options);
       evt.preventDefault();
       return false;
     };
     canvas.onmouseup = function(evt) {
       if (!document.body.style.softwareCursor) document.body.style.cursor = '';
-      recordMouseEvent('mouseup', evt, canvas, display, eventQueue, options);
+      recordMouseEvent('mouseup', evt, canvas, display, display.eventQueue, options);
       checkFullscreen();
       evt.preventDefault();
     };
     canvas.onmousemove = function(evt) {
       if (!document.body.style.softwareCursor) document.body.style.cursor = '';
-      recordMouseEvent('mousemove', evt, canvas, display, eventQueue, options);
+      recordMouseEvent('mousemove', evt, canvas, display, display.eventQueue, options);
       evt.preventDefault();
     };
     canvas.oncontextmenu = function() {
       return false;
     };
+    
     // touch event handling
     var touch = {
       state: 'idle',
@@ -717,8 +724,8 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
             if (touch.state !== 'got1stFinger') return;
             touch.state = 'mousing';
             touch.button = e.button = 0;
-            recordMouseEvent('mousemove', e, canvas, display, eventQueue, options);
-            recordMouseEvent('mousedown', e, canvas, display, eventQueue, options);
+            recordMouseEvent('mousemove', e, canvas, display, display.eventQueue, options);
+            recordMouseEvent('mousedown', e, canvas, display, display.eventQueue, options);
           }, 100);
           break;
         case 'got1stFinger':
@@ -733,8 +740,8 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
             } else {
 	      touch.state = 'mousing';
 	      touch.button = e.button = 2;
-	      recordMouseEvent('mousemove', e, canvas, display, eventQueue, options);
-	      recordMouseEvent('mousedown', e, canvas, display, eventQueue, options);
+	      recordMouseEvent('mousemove', e, canvas, display, display.eventQueue, options);
+	      recordMouseEvent('mousedown', e, canvas, display, display.eventQueue, options);
             }
           }, 200);
           break;
@@ -748,11 +755,11 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
       case 'got1stFinger':
         touch.state = 'mousing';
         touch.button = e.button = 0;
-        recordMouseEvent('mousemove', e, canvas, display, eventQueue, options);
-        recordMouseEvent('mousedown', e, canvas, display, eventQueue, options);
+        recordMouseEvent('mousemove', e, canvas, display, display.eventQueue, options);
+        recordMouseEvent('mousedown', e, canvas, display, display.eventQueue, options);
         break;
       case 'mousing':
-        recordMouseEvent('mousemove', e, canvas, display, eventQueue, options);
+        recordMouseEvent('mousemove', e, canvas, display, display.eventQueue, options);
         return;
       case 'got2ndFinger':
         if (evt.touches.length > 1)
@@ -775,14 +782,14 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
         case 'mousing':
           if (evt.touches.length > 0) break;
           touch.state = 'idle';
-          recordMouseEvent('mouseup', e, canvas, display, eventQueue, options);
+          recordMouseEvent('mouseup', e, canvas, display, display.eventQueue, options);
           return;
         case 'got1stFinger':
           touch.state = 'idle';
           touch.button = e.button = 0;
-          recordMouseEvent('mousemove', e, canvas, display, eventQueue, options);
-          recordMouseEvent('mousedown', e, canvas, display, eventQueue, options);
-          recordMouseEvent('mouseup', e, canvas, display, eventQueue, options);
+          recordMouseEvent('mousemove', e, canvas, display, display.eventQueue, options);
+          recordMouseEvent('mousedown', e, canvas, display, display.eventQueue, options);
+          recordMouseEvent('mouseup', e, canvas, display, display.eventQueue, options);
           return;
         case 'got2ndFinger':
   	  // Enable scribbling, by raising the recognizer input
@@ -839,8 +846,8 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
 	recordModifiers({ctrlKey: true, metaKey: true}, display);
 
 	if (event.wheelDeltaY) {
-	  if (event.wheelDeltaY < 0) recordKeyboardEvent(31, event.timeStamp, display, eventQueue);
-	  else recordKeyboardEvent(30, event.timeStamp, display, eventQueue);}},
+	  if (event.wheelDeltaY < 0) recordKeyboardEvent(31, event.timeStamp, display, display.eventQueue);
+	  else recordKeyboardEvent(30, event.timeStamp, display, display.eventQueue);}},
       {passive: false});
     
     // keyboard stuff
@@ -865,8 +872,6 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
       if (top.squeakDisplay.vm) document.body.style.cursor = 'none';
       checkFullscreen();
       if (canvas.otherCanvasActive) {
-	evt.preventDefault();
-	evt.stopPropagation();
 	return true;}
       if (!display.vm) {
 	return true;}
@@ -890,7 +895,7 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
         46: 127, // Delete
       })[evt.keyCode];
       if (squeakCode) { // special key pressed
-        recordKeyboardEvent(squeakCode, evt.timeStamp, display, eventQueue);
+        recordKeyboardEvent(squeakCode, evt.timeStamp, display, display.eventQueue);
 	evt.stopPropagation();
         return evt.preventDefault();
       }
@@ -913,14 +918,12 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
       }
 
       if ((key != 'Control') && (key != 'Shift') && (key != 'Meta') && (key != 'Alt') && (key != 'CapsLock')) {
-	recordKeyboardEvent(code, evt.timeStamp, display, eventQueue);
+	recordKeyboardEvent(code, evt.timeStamp, display, display.eventQueue);
 	evt.stopPropagation();
 	return evt.preventDefault();}
     };
     document.onkeyup = function(evt) {
       if (canvas.otherCanvasActive) {
-	evt.preventDefault();
-	evt.stopPropagation();
 	return true;}
 
       if (!display.vm) return true;
@@ -956,16 +959,16 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
         evt.dataTransfer.dropEffect = 'none';
       } else {
         evt.dataTransfer.dropEffect = 'copy';
-        recordDragDropEvent(Squeak.EventDragMove, evt, canvas, display, eventQueue);
+        recordDragDropEvent(Squeak.EventDragMove, evt, canvas, display, display.eventQueue);
       }
     };
     document.ondragenter = function(evt) {
       if (!dragEventHasFiles(evt)) return;
-      recordDragDropEvent(Squeak.EventDragEnter, evt, canvas, display, eventQueue);
+      recordDragDropEvent(Squeak.EventDragEnter, evt, canvas, display, display.eventQueue);
     };
     document.ondragleave = function(evt) {
       if (!dragEventHasFiles(evt)) return;
-      recordDragDropEvent(Squeak.EventDragLeave, evt, canvas, display, eventQueue);
+      recordDragDropEvent(Squeak.EventDragLeave, evt, canvas, display, display.eventQueue);
     };
     document.ondrop = function(evt) {
       evt.preventDefault();
@@ -990,7 +993,7 @@ module("SqueakJS").requires("users.bert.SqueakJS.vm").toRun(function() {
               SqueakJS.appName = imageName.slice(0, -6);
               SqueakJS.runImage(image, imageName, display, options);
             } else {
-              recordDragDropEvent(Squeak.EventDragDrop, evt, canvas, display, eventQueue);
+              recordDragDropEvent(Squeak.EventDragDrop, evt, canvas, display, display.eventQueue);
             }
           }
         };
