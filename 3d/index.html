@@ -6,362 +6,260 @@
     <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
     <script src="https://unpkg.com/super-hands@^3.0.1/dist/super-hands.min.js"></script>
     <script src="js/aframe/components/canvas-updater.js"></script>
-
+    <script src="js/aframe/components/reposition.js"></script>
+    
     <link href="css/squeakjs.css"
 	  rel="stylesheet" />
     
     <link rel="manifest"
 	  href="manifest.json">
 
-    <body draggable="false">
-      <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
+  </head>
+  <body draggable="false">
+    <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
 
-      <script type="text/javascript" src="/js/hydra.js"></script>
-      <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/webmidi"></script>
-      <script type="text/javascript" src="https://unpkg.com/@croquet/croquet"></script>
-      <script type="text/javascript" src="https://unpkg.com/tone@latest/build/Tone.js"></script>
-      <script type="text/javascript" src="/js/hex.js"></script>
+    <script type="text/javascript" src="/js/hydra.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/webmidi"></script>
+    <script type="text/javascript" src="https://unpkg.com/@croquet/croquet"></script>
+    <script type="text/javascript" src="https://unpkg.com/tone@latest/build/Tone.js"></script>
+    <script type="text/javascript" src="/js/hex.js"></script>
 
-      <script>
-	document.addEventListener(
-	  'keydown',
-	  (event) => {
-	    document.querySelectorAll('.keydownlistener').forEach(
-	      (listener) => {
-		if (listener.onkeydown && listener.mouseentered)
-		  listener.onkeydown(event)})})
+    <script>
+      document.addEventListener(
+	'keydown',
+	(event) => {
+	  document.querySelectorAll('.keydownlistener').forEach(
+	    (listener) => {
+	      if (listener.onkeydown && listener.mouseentered)
+		listener.onkeydown(event)})})
 
-	document.addEventListener(
-	  'mouseleave',
-	  (event) => {
-	    document.querySelectorAll('.mouseleavelistener').forEach(
-	      (listener) => {
-		if (listener.onkeydown && listener.mouseentered) {
-		  listener.mouseentered = false
-		  listener.onmouseleave(event)}})})
-      </script>
-      <a-scene id="scene"
+      document.addEventListener(
+	'mouseleave',
+	(event) => {
+	  document.querySelectorAll('.mouseleavelistener').forEach(
+	    (listener) => {
+	      if (listener.onkeydown && listener.mouseentered) {
+		listener.mouseentered = false
+		listener.onmouseleave(event)}})})
+    </script>
+    
+    <a-scene id="scene"
 
-	       raycaster="showLine: false;
-			  far: 100;
-			  objects: .squeaky"
+	     raycaster="showLine: false;
+			far: 100;
+			objects: .squeaky"
 
-	       line="color: orange;
-		     opacity: 0.5"
+	     line="color: orange;
+		   opacity: 0.5"
 
-	       cursor="rayOrigin: mouse"
-	       keyboard-shortcuts="enterVR: false">
+	     cursor="rayOrigin: mouse"
+	     keyboard-shortcuts="enterVR: false">
 
-	<a-assets>
+      <a-assets id="assets">
 
-	  <canvas id="caffeine-canvas"
-		  width="1440"
-		  height="900"
-		  tabindex="1"
-		  crossorigin="anonymous"
-		  appID="d93ea2a2-bf59-4f59-bb21-c36c596c4488"
+	<canvas id="caffeine-canvas"
+		width="1440"
+		height="900"
+		tabindex="1"
+		crossorigin="anonymous"
+		appID="d93ea2a2-bf59-4f59-bb21-c36c596c4488"
 
-		  style="cursor: default;
-			 opacity: 1;
-			 transition: opacity 500ms"></canvas>
+		style="cursor: default;
+		       opacity: 1;
+		       transition: opacity 500ms"></canvas>
 
-	  <img id="logo"
-	       src="pictures/backgrounds/bootscreen/bootscreen1024x512.jpeg">
+	<video id="video-capture"
+	       width="1440"
+	       height="900"
+	       autoplay></video>
 
-	  <canvas class="keydownlistener mouseleavelistener"
-		  id="worldly-cube-face-canvas-1"
-		  width="200"
-		  height="200"
-		  style="cursor: default"></canvas>
+	<img id="logo"
+	     src="pictures/backgrounds/bootscreen/bootscreen1024x512.jpeg">
 
-	  <canvas id="worldly-cube-face-canvas-2"
-		  width="200"
-		  height="200"
-		  style="cursor: default"></canvas>
+      </a-assets>
 
-  	  <canvas id="worldly-cube-face-canvas-3"
-		  width="400"
-		  height="200"
-		  style="cursor: default"></canvas>
+      <a-entity class="squeaky"
+		id="video-capture-plane"
 
-  	  <canvas id="worldly-cube-face-canvas-4"
-		  width="400"
-		  height="200"
-		  style="cursor: default"></canvas>
+		material="shader: flat;
+			  transparent: true;
+			  opacity: 0.8"
 
-  	  <canvas id="worldly-cube-face-canvas-5"
-		  width="400"
-		  height="200"
-		  style="cursor: default"></canvas>
+                geometry="primitive: plane;
+			  width: 14.4;
+			  height: 9"
 
-  	  <canvas id="worldly-cube-face-canvas-6"
-		  width="400"
-		  height="200"
-		  style="cursor: default"></canvas>
+                position="10 10 0"
+		rotation="0 270 0"
+		canvas-updater></a-entity>
+      
+      <a-entity class="squeaky"
+		id="squeak-plane"
 
-	</a-assets>
+		material="shader: flat;
+			  transparent: true;
+			  opacity: 0.8;
+			  src: #caffeine-canvas"
 
-	<!-- the first Worldly cube -->
+                geometry="primitive: plane;
+			  width: 14.4;
+			  height: 9"
 
-<!--
-	<a-entity id="worldly-cube"
-		  hoverable
-		  grabbable
-		  stretchable
-		  draggable
-		  dropppable>
--->
+                position="0 10 -8"
+		canvas-updater></a-entity>
 
-	  <a-entity class="squeaky"
-		    id="worldly-cube-face-1"
+      <a-box id="squeak-frame-top"
+	     position="0 14.75 -7.9"
+	     width="15.4"
+	     height="0.25"
+	     depth="0.25"
+	     color="gray"></a-box>
 
-		    material="shader: flat;
-			      transparent: false;
-			      opacity: 0.8;
-			      src: #worldly-cube-face-canvas-1"
+      <a-box id="squeak-frame-bottom"
+	     position="0 5.25 -7.9"
+	     width="15.4"
+	     height="0.25"
+	     depth="0.25"
+	     color="gray"></a-box>
 
-                    geometry="primitive: plane;
-			      width: 2;
-			      height: 2"
+      <a-box id="squeak-frame-left"
+	     position="-7.45 10 -7.9"
+	     width="0.25"
+	     height="10"
+	     depth="0.25"
+	     color="gray"></a-box>
 
-                    position="-2 5 0"
-		    rotation="0 270 0"
-		    canvas-updater></a-entity>
-		    
-	  <a-entity class="squeaky"
-		    id="worldly-cube-face-2"
+      <a-box id="squeak-frame-right"
+	     position="7.45 10 -7.9"
+	     width="0.25"
+	     height="10"
+	     depth="0.25"
+	     color="gray"></a-box>
 
-		    material="shader: flat;
-			      transparent: false;
-			      opacity: 0.8;
-			      src: #worldly-cube-face-canvas-2"
+      <div id="progress-spinner"
+	   style="opacity: 0.8;
+		  z-index: 10;
+		  margin: inherit;
+		  top: 18;
+		  left: inherit;
+		  right: 19;
+		  bottom: inherit;
+		  width: 52px;
+		  height: 52px;">
 
-                    geometry="primitive: plane;
-			      width: 2;
-			      height: 2"
-
-                    position="2 5 0"
-		    rotation="0 90 0"
-		    canvas-updater></a-entity>
-		    
-	  <a-entity class="squeaky"
-		    id="worldly-cube-face-3"
-
-		    material="shader: flat;
-			      transparent: false;
-			      opacity: 0.8;
-			      src: #worldly-cube-face-canvas-3"
-
-                    geometry="primitive: plane;
-			      width: 4;
-			      height: 2"
-
-                    position="0 5 1"
-		    rotation="0 0 0"
-		    canvas-updater></a-entity>
-		    
-	  <a-entity class="squeaky"
-		    id="worldly-cube-face-4"
-
-		    material="shader: flat;
-			      transparent: false;
-			      opacity: 0.8;
-			      src: #worldly-cube-face-canvas-4"
-
-                    geometry="primitive: plane;
-			      width: 4;
-			      height: 2"
-
-                    position="0 5 -1"
-		    rotation="0 90 0"
-		    canvas-updater></a-entity>
-		    
-	  <a-entity class="squeaky"
-		    id="worldly-cube-face-5"
-
-		    material="shader: flat;
-			      transparent: false;
-			      opacity: 0.8;
-			      src: #worldly-cube-face-canvas-5"
-
-                    geometry="primitive: plane;
-			      width: 4;
-			      height: 2"
-
-                    position="0 6 0"
-		    rotation="90 0 0"
-		    canvas-updater></a-entity>
-		    
-	  <a-entity class="squeaky"
-		    id="worldly-cube-face-6"
-
-		    material="shader: flat;
-			      transparent: false;
-			      opacity: 0.8;
-			      src: #worldly-cube-face-canvas-6"
-
-                    geometry="primitive: plane;
-			      width: 4;
-			      height: 2"
-
-                    position="0 4 0"
-		    rotation="90 0 0"
-		    canvas-updater></a-entity>
-	<!--
-</a-entity>
--->
-		    
-	<a-entity class="squeaky"
-		  id="squeak-plane"
-
-		  material="shader: flat;
-			    transparent: true;
-			    opacity: 0.8;
-			    src: #caffeine-canvas"
-
-                  geometry="primitive: plane;
-			    width: 14.4;
-			    height: 9"
-
-                  position="0 10 -8"
-		  canvas-updater></a-entity>
-
-	<a-box id="squeak-frame-top"
-	       position="0 14.75 -7.9"
-	       width="15.4"
-	       height="0.25"
-	       depth="0.25"
-	       color="gray"></a-box>
-
-	<a-box id="squeak-frame-bottom"
-	       position="0 5.25 -7.9"
-	       width="15.4"
-	       height="0.25"
-	       depth="0.25"
-	       color="gray"></a-box>
-
-	<a-box id="squeak-frame-left"
-	       position="-7.45 10 -7.9"
-	       width="0.25"
-	       height="10"
-	       depth="0.25"
-	       color="gray"></a-box>
-
-	<a-box id="squeak-frame-right"
-	       position="7.45 10 -7.9"
-	       width="0.25"
-	       height="10"
-	       depth="0.25"
-	       color="gray"></a-box>
-
-	<div id="progress-spinner"
-	     style="opacity: 0.8;
-		    z-index: 10;
-		    margin: inherit;
-		    top: 18;
-		    left: inherit;
-		    right: 19;
-		    bottom: inherit;
-		    width: 52px;
-		    height: 52px;">
-
-	  <!-- no "spokes" div, so the spinner just glows -->
-	  
-	  <div id="sqSpinnerSpokes"
-
-	       style="top: 21px;
-                      width: 42px;"></div></div>
-
-	<a-entity environment="preset: forest"></a-entity>
-
-	<a-plane id="logo"
-		 src="#logo"
-		 width="14"
-		 height="8.7"
-		 position="0 10 -8.1"
-		 rotation="0 180 0"></a-plane>
-
-	<a-entity id="wind"
-		  position="0 10 -8"
-
-		  sound="src: #wind-sound;
-			 loop: true"></a-entity>
+	<!-- no "spokes" div, so the spinner just glows -->
 	
-	<a-entity id="cameraRig"
-		  position="0 10 0"
-		  rotation>
+	<div id="sqSpinnerSpokes"
 
-	  <a-entity id="left-hand"
-		    sphere-collider="objects: a-box"
-		    laser-controls="hand: left"
+	     style="top: 21px;
+                    width: 42px;"></div></div>
 
-		    raycaster="objects: .squeaky;
-			       far: 1000"
+      <a-entity environment="preset: forest"></a-entity>
 
-		    line="color: red; 
-			  opacity: 0.75"
-		    
+      <a-plane id="logo"
+	       src="#logo"
+	       width="14"
+	       height="8.7"
+	       position="0 10 -8.1"
+	       rotation="0 180 0"></a-plane>
+
+      <a-entity id="wind"
+		position="0 10 -8"
+
+		sound="src: #wind-sound;
+		       loop: true"></a-entity>
+      
+      <a-entity id="cameraRig"
+		position="0 10 0"
+		rotation>
+
+	<a-entity id="left-hand"
+		  sphere-collider="objects: a-box"
+		  laser-controls="hand: left"
+
+		  raycaster="objects: .squeaky;
+			     far: 1000"
+
+		  line="color: red; 
+			opacity: 0.75"
+		  
+		  teleport-controls="cameraRig: #cameraRig; 
+				     button: grip;
+				     hitCylinderColor: #ff3468; 
+				     curveHitColor: #ff3468; 
+				     curveMissColor: #333333; 
+				     curveLineWidth: 0.01"
+
+		  super-hands></a-entity>
+
+	<a-entity id="right-hand"
+		  sphere-collider="objects: a-box"
+		  laser-controls="hand: right"
+
+		  raycaster="objects: .squeaky;
+			     far: 1000"
+
+		  line="color: red; 
+			opacity: 0.75"
+
+		  super-hands></a-entity>
 
 
+	<a-entity id="camera"
+		  position="0 10 50"
+		  camera
+		  look-controls
+		  wasd-controls></a-entity></a-entity>
 
-		    teleport-controls="cameraRig: #cameraRig; 
-				       button: grip;
-				       hitCylinderColor: #ff3468; 
-				       curveHitColor: #ff3468; 
-				       curveMissColor: #333333; 
-				       curveLineWidth: 0.01"
+      <input id="home"
+	     type="image"
+	     draggable="false"
+	     src="pictures/icons/a-frame/home.png"
+	     tabindex="-1"
+	     width="70"
+	     height="70"
+	     style="opacity: 0.5;
+		    user-select: none;
+		    outline: none;
+		    z-index: 10;
+		    position: absolute;
+		    right: 10;
+		    top: 10"></a-scene>
 
-		    super-hands></a-entity>
+    <script>
+      var hand
 
-	  <a-entity id="right-hand"
-		    sphere-collider="objects: a-box"
-		    laser-controls="hand: right"
+      hand = document.getElementById('right-hand')
+      hand.addEventListener('pinchstarted', (event) => {console.log(event)})
+      hand.addEventListener('pinchended', (event) => {console.log(event)})
+    </script>
 
-		    raycaster="objects: .squeaky;
-			       far: 1000"
+    <script>
+      var videoCapture = document.getElementById('video-capture'),
+	  videoCapturePlane = document.getElementById('video-capture-plane'),
+	  displayMediaOptions = {
+	    video: {cursor: "always"},
+	    audio: false}
 
-		    line="color: red; 
-			  opacity: 0.75"
+      async function startCapture() {
+	try {
+	  videoCapture.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+	  videoCapturePlane.setAttribute('material', {src: '#video-capture'})
 
-		    super-hands></a-entity>
+	  forwardProjectedMouseEvents(
+	    document.getElementById('camera'),
+	    videoCapturePlane,
+	    videoCapture)}
+	catch(err) {console.error("video capture error: " + err)}}
 
-
-	  <a-box color="gray"
-	  
-	  <a-entity id="camera"
-		    position="0 10 50"
-
-		    camera
-		    look-controls
-		    wasd-controls></a-entity></a-entity>
-
-	<input id="home"
-	       type="image"
-	       draggable="false"
-	       src="pictures/icons/a-frame/home.png"
-	       tabindex="-1"
-	       width="70"
-	       height="70"
-	       style="opacity: 0.5;
-		      user-select: none;
-		      outline: none;
-		      z-index: 10;
-		      position: absolute;
-		      right: 10;
-		      top: 10"></a-scene>
-
-      <script>
-	var hand
-
-	hand = document.getElementById('right-hand')
-	hand.addEventListener('pinchstarted', (event) => {console.log(event)})
-	hand.addEventListener('pinchended', (event) => {console.log(event)})
-      </script>
-      <script src="js/squeakjs/squeak.js"></script>
-      <script src="js/startup.js"></script>
-      <script src="js/aframe/platform.js"></script>
-      <script src="js/oscrelay/node_modules/osc/dist/osc-browser.min.js"></script>
-      <script>
-	setTimeout(() => {[].slice.call(document.getElementsByClassName('environment')).forEach(each => {
-	  if (each.components['light']) {each.components['light'].light.intensity = 0}})}, 2000)
+      startCapture()
+    </script>
+    
+    <script src="js/squeakjs/squeak.js"></script>
+    <script src="js/startup.js"></script>
+    <script src="js/aframe/platform.js"></script>
+    <script src="js/oscrelay/node_modules/osc/dist/osc-browser.min.js"></script>
+    <script>
+      setTimeout(() => {[].slice.call(document.getElementsByClassName('environment')).forEach(each => {
+	if (each.components['light']) {each.components['light'].light.intensity = 0}})}, 2000)
 </script></body></html>

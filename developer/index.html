@@ -130,7 +130,7 @@
                 fetch('https://caffeine.js.org/js/squeakjs/tether/handler.js')
                   .then((handlerSourceResult) => {handlerSourceResult.text()
                     .then((handlerSource) => {
-                      fetch('https://caffeine.js.org/node/squeak-worker.js')
+                      fetch('https://caffeine.js.org/developer/js/squeakjs/squeak-worker.js')
                         .then((virtualMachineSourceResult) => {virtualMachineSourceResult.text()
                           .then((virtualMachineSource) => {
                             window.caffeineWorker = new Worker(URL.createObjectURL(new Blob([virtualMachineSource])))
