@@ -9,22 +9,39 @@ AFRAME.registerComponent(
 	window.addEventListener('mouseup', stopRepositioning, false)}
 
       function reposition(event) {
+	// Move along the x or z axis, depending on the y-rotation of the camera.
+
 	var oldPosition = el.getAttribute('position'),
 	    newPosition = new THREE.Vector3(),
 	    positionDelta = new THREE.Vector3(),
-	    factor = 0.01
+	    factor = 0.01,
+	    alignedOnZ = Math.abs((Math.cos((camera.getAttribute('rotation').y + 90) * (Math.PI * 2 / 360)))) < Math.cos(Math.PI / 4)
 
-	if (camera.getAttribute('position').z > oldPosition.z)
-	  newPosition.x = oldPosition.x + (factor * event.movementX)
-	else
-	  newPosition.x = oldPosition.x - (factor * event.movementX)
+	if (alignedOnZ) {
+	  if (camera.getAttribute('position').z > oldPosition.z)
+	    newPosition.x = oldPosition.x + (factor * event.movementX)
+	  else
+	    newPosition.x = oldPosition.x - (factor * event.movementX)
 
-	if (event.shiftKey) {
-	  newPosition.y = oldPosition.y - (factor * event.movementY)
-	  newPosition.z = oldPosition.z}
+	  if (event.shiftKey) {
+	    newPosition.y = oldPosition.y - (factor * event.movementY)
+	    newPosition.z = oldPosition.z}
+	  else {
+	    newPosition.y = oldPosition.y
+	    newPosition.z = oldPosition.z + (factor * event.movementY)}}
 	else {
-	  newPosition.y = oldPosition.y
-	  newPosition.z = oldPosition.z + (factor * event.movementY)}
+	  // aligned on X
+	  if (camera.getAttribute('position').x > oldPosition.x)
+	    newPosition.z = oldPosition.z - (factor * event.movementX)
+	  else
+	    newPosition.z = oldPosition.z + (factor * event.movementX)
+
+	  if (event.shiftKey) {
+	    newPosition.y = oldPosition.y - (factor * event.movementY)
+	    newPosition.x = oldPosition.x}
+	  else {
+	    newPosition.y = oldPosition.y
+	    newPosition.x = oldPosition.x + (factor * event.movementY)}}
 
 	positionDelta.x = newPosition.x - oldPosition.x
 	positionDelta.y = newPosition.y - oldPosition.y

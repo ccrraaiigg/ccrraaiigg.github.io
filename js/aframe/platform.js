@@ -142,7 +142,21 @@ function unrotate(geometry, rotation) {
 
 function forwardProjectedMouseEvents(camera, plane, canvas) {
   var dispatch = function (planarEvent) {
-    var canvasEvent = new MouseEvent(planarEvent.type),
+    var canvasEvent = new MouseEvent(
+      planarEvent.type,
+      {
+	screenX: planarEvent.screenX,
+	screenY: planarEvent.screenY,
+	clientX: planarEvent.clientX,
+	clientY: planarEvent.clientY,
+	ctrlKey: planarEvent.ctrlKey,
+	shiftKey: planarEvent.shiftKey,
+	altKey: planarEvent.altKey,
+	metaKey: planarEvent.metaKey,
+	button: planarEvent.button,
+	buttons: planarEvent.buttons,
+	relatedTarget: planarEvent.relatedTarget,
+	region: planarEvent.region}),
 	cameraPoint = centerOf(camera),
 	cameraRotation = rotationOf(camera),
 	intersection = planarEvent.detail.intersection,
@@ -234,9 +248,11 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     canvasEvent.projectedX = Math.floor((selectionDistance * Math.cos(theta)) * widthFactor)
     canvasEvent.projectedY = Math.floor((selectionDistance * Math.sin(theta)) * heightFactor)
     canvas.lastProjectedEvent = canvasEvent
-    
+
     canvas.dispatchEvent(canvasEvent)}
-  
+
+  plane.dispatch = dispatch
+
   document.addEventListener(
     'wheel',
     function (event) {
@@ -301,10 +317,12 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
   plane.addEventListener(
     'mouseenter',
     function(event) {
-      disableControls('wasd-controls')
-
       if (!mousedown) {
-	if (squeakDisplay) squeakDisplay.vm = SqueakJS.vm
+	if (plane.expensive) plane.play()
+	squeakDisplay.vm = SqueakJS.vm
+	disableControls('look-controls')
+	disableControls('wasd-controls')
+	
 	getCSSRule('canvas.a-canvas.a-mouse-cursor-hover:hover').style.cssText = "cursor: normal;"
 	getCSSRule('.a-canvas.a-grab-cursor:hover').style.cssText = "cursor: normal;"
 	plane.focus()
@@ -315,24 +333,52 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     dispatch)
 
   plane.addEventListener(
+    'contextmenu',
+    function (event) {
+      var unfreeze,
+	  mousedown,
+	  mouseup,
+	  done = false
+
+      spikeRendering()
+
+      event.stopPropagation()
+      event.preventDefault()
+      
+      if (squeakDisplay.unfreeze) {
+	unfreeze = squeakDisplay.unfreeze
+	squeakDisplay.unfreeze = null}
+
+      mousedown = new MouseEvent('mousedown', event)
+      mouseup = new MouseEvent('mouseup', event)
+
+      try {unfreeze()}
+      catch (error) {
+	dispatch(mousedown)
+	setTimeout(() => {dispatch(mouseup)}, 100)
+	done = true}
+	  
+      if (!done) {dispatch(event)}})
+      
+  plane.addEventListener(
     'mousedown',
     function (event) {
       spikeRendering()
 
       if (squeakDisplay.unfreeze) {
-	var foo = squeakDisplay.unfreeze,
+	var unfreeze = squeakDisplay.unfreeze,
 	    mouseup
 
         squeakDisplay.unfreeze = null
 	mouseup = new MouseEvent('mouseup', event)
 
-	try {foo()}
+	try {unfreeze()}
 	catch (error) {
-	  if (!(document.getElementById('scene').is('vr-mode'))) disableControls('look-controls')
+	  if (!(document.getElementById('scene').is('vr-mode')) && squeakDisplay.vm) disableControls('look-controls')
 	  dispatch(event)
 	  setTimeout(() => {dispatch(mouseup)}, 100)}}
 	  
-      if (!(document.getElementById('scene').is('vr-mode'))) disableControls('look-controls')
+      if (!(document.getElementById('scene').is('vr-mode')) && squeakDisplay.vm) disableControls('look-controls')
       dispatch(event)})
 
   document.addEventListener(
@@ -364,12 +410,13 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
   plane.addEventListener(
     'mouseleave',
     function (event) {
+      if (plane.expensive) plane.pause()
       enableControls('look-controls')
       enableControls('wasd-controls')
 
       getCSSRule('canvas.a-canvas.a-mouse-cursor-hover:hover').style.cssText = 'cursor: grab; cursor: -moz-grab; cursor: -webkit-grab;'
       getCSSRule('.a-canvas.a-grab-cursor:hover').style.cssText = 'cursor: grab; cursor: -moz-grab; cursor: -webkit-grab;'
-  document.getElementById('camera').components['wasd-controls'].data.fly = true
+      camera.getAttribute('wasd-controls').fly = true
 
       // Trick squeak.js into not queueing keyboard events.
       canvas.otherCanvasActive = false
@@ -428,7 +475,9 @@ camera.addEventListener(
     setTimeout(
       () => {
 	camera.setAttribute('look-controls', '')
-	scene.goinghome = false},
+	scene.goinghome = false
+//	squeakDisplay.vm = null
+      },
       1000)})
 
 home.onclick = (event) => {
