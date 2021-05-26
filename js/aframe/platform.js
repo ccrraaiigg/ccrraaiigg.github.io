@@ -2,6 +2,14 @@ scene.renderingNormally = true
 
 window.animatePositionAndRotation = (element, position, rotation) => {
   AFRAME.ANIME({
+    targets: [element.object3D.position],
+    x: position.x,
+    y: position.y,
+    z: position.z,
+    easing: 'easeInOutSine',
+    duration: 500})
+
+  AFRAME.ANIME({
     targets: [element.object3D.rotation],
     x: rotation.x,
     y: rotation.y,
