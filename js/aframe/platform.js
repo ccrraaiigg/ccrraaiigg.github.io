@@ -1,13 +1,13 @@
 scene.renderingNormally = true
 
 window.animatePositionAndRotation = (element, position, rotation) => {
-  element.setAttribute(
-    'animation',
-    'property: position; to: ' + position[0] + ' ' + position[1] + ' ' + position[2] + '; easing: easeInOutSine; dur: 500')
-
-  element.setAttribute(
-    'animation__rotation',
-    'property: rotation; to: ' + rotation[0] + ' ' + rotation[1] + ' ' + rotation[2] + '; easing: easeInOutSine; dur: 500')}
+  AFRAME.ANIME({
+    targets: [element.object3D.rotation],
+    x: rotation.x,
+    y: rotation.y,
+    z: rotation.z,
+    easing: 'easeInOutSine',
+    duration: 500})}
 
 window.mobilecheck = function() {
   var check = false;
@@ -156,14 +156,15 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
 	button: planarEvent.button,
 	buttons: planarEvent.buttons,
 	relatedTarget: planarEvent.relatedTarget,
-	region: planarEvent.region}),
+	region: planarEvent.region
+      }),
 	cameraPoint = centerOf(camera),
 	cameraRotation = rotationOf(camera),
 	intersection = planarEvent.detail.intersection,
 	intersectionPoint,
 	selectedPoint,
 	translatedSelectedPoint,
-	planeCenter = centerOf(plane),
+	planeCenter = plane.object3D.getWorldPosition(new THREE.Vector3()),
 	planeRotation = rotationOf(plane),
 	simplePlane = new THREE.PlaneGeometry(),
 	planeInCameraFrame = new THREE.PlaneGeometry(),
@@ -249,6 +250,9 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     canvasEvent.projectedY = Math.floor((selectionDistance * Math.sin(theta)) * heightFactor)
     canvas.lastProjectedEvent = canvasEvent
 
+    if ((planarEvent.type == 'mousedown') && ((canvasEvent.projectedX > canvas.width) || (canvasEvent.projectedY > canvas.height))) {
+      debugger}
+    
     canvas.dispatchEvent(canvasEvent)}
 
   plane.dispatch = dispatch
@@ -399,13 +403,13 @@ function forwardProjectedMouseEvents(camera, plane, canvas) {
     'keydown',
     function (event) {
       plane.focus()
-      dispatch(event)})
+      canvas.dispatchEvent(event)})
   
   plane.addEventListener(
     'keyup',
     function (event) {
       plane.focus()
-      dispatch(event)})
+      canvas.dispatchEvent(event)})
   
   plane.addEventListener(
     'mouseleave',
@@ -461,7 +465,7 @@ camera.addEventListener(
       easing: 'easeInOutSine',
       duration: 800,
       x: 0,
-      y: 0,
+      y: 10,
       z: -1.5})
 
     AFRAME.ANIME({

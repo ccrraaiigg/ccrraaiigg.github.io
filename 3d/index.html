@@ -22,6 +22,9 @@
     <script type="text/javascript"
 	    src="js/aframe/components/reposition.js"></script>
     
+    <script type="text/javascript"
+	    src="js/aframe/components/yrotate.js"></script>
+    
     <link href="css/squeakjs.css"
 	  rel="stylesheet" />
     
@@ -161,9 +164,9 @@
 	   style="opacity: 0.8;
 		  z-index: 10;
 		  margin: inherit;
-		  top: 18;
+		  top: 9;
 		  left: inherit;
-		  right: 19;
+		  right: 10;
 		  bottom: inherit;
 		  width: 52px;
 		  height: 52px;">
@@ -191,7 +194,6 @@
 		       loop: true"></a-entity>
       
       <a-entity id="cameraRig"
-		position="0 10 0"
 		rotation>
 
 	<a-entity id="left-hand"
@@ -227,7 +229,7 @@
 
 
 	<a-entity id="camera"
-		  position="0 10 50"
+		  position="0 20 50"
 		  camera
 		  look-controls
 		  wasd-controls></a-entity></a-entity>
@@ -244,8 +246,8 @@
 		    outline: none;
 		    z-index: 10;
 		    position: absolute;
-		    right: 10;
-		    top: 10">
+		    right: 1;
+		    top: 1"></input>
 
       <input id="worldly"
 	     type="image"
@@ -259,8 +261,8 @@
 		    outline: none;
 		    z-index: 10;
 		    position: absolute;
-		    left: 15;
-		    top: 15"</a-scene>
+		    left: 5;
+		    top: 5"</input></a-scene>
 
     <script>
       var hand
