@@ -5,24 +5,34 @@ function call(encoded) {
   var json = JSON.parse(encoded),
       tag = json.tag,
       func = json.func,
-      arg = json.arg,
+      args = json.args,
       object = new LiveAPI(tag),
       result
 
   post('object is ' + object + '\n')
-  post('calling ' + func + ' with arg ' + JSON.stringify(arg) + ' of object ' + tag + '\n')
+  post('calling ' + func + ' with args ' + JSON.stringify(args) + ' of object ' + tag + '\n')
 
   try {
     if (func == 'apiProperty') {
       post('API property\n')
-      result = object[arg]}
+      if (args[1].length > 0) {
+	post('set\n')
+	object[args[0]] = (args[1])[0]}
+      else {
+	post('get\n')
+	result = object[args[0]]}}
     else {
       if (func == 'attribute') {
 	post('attribute\n')
-	result = object.get(arg)}
+	if (args[1].length > 0) {
+	  post('set\n')
+	  result = object.set(args[0], (args[1])[0])}
+	else {
+	  post('get\n')
+	  result = object.get(args[0])}}
       else {
 	post('function\n')
-	if (arg) {result = object.call(func, arg)}
+	if (args) {result = object.call(func, args)}
 	else {result = object.call(func)}}}}
   catch (error) {
     post(error + '\n')
@@ -38,20 +48,4 @@ function call(encoded) {
       func: func,
       cls: json.cls,
       result: result}))}
-
-function getSelectedScene() {
-  return LiveAPI('live_set view').get('selected_scene')}
-
-function fire(id) {
-  LiveAPI('id ' + id).call('fire')
-  return true}
-
-function numberOfScenes() {
-  var numberOfScenes = song.getcount('scenes')
-  
-  post('number of scenes: ' + numberOfScenes + '\n')
-  return {numberOfScenes: numberOfScenes}}
-
-
-
 
