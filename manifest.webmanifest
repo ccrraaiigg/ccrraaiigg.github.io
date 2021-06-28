@@ -17,7 +17,7 @@
   "start_url": "/2d?source=pwa",
   "background_color": "#3367D6",
   "display": "standalone",
-  "scope": "/2d",
+  "scope": "/spa",
   "theme_color": "#3367D6",
   "shortcuts": [
     {
