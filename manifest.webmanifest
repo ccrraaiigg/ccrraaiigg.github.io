@@ -24,7 +24,7 @@
       "name": "Caffeine :: Livecode the Web!",
       "short_name": "Caffeine",
       "description": "an in-browser GUI-enabled HTML5 IDE",
-      "url": "/2d?source=pwa",
+      "url": "/spa?source=pwa",
       "icons": [{ "src": "/pictures/icons/caffeine/caffeineWebAppIcon192.png", "sizes": "192x192" }]
     }
   ]
